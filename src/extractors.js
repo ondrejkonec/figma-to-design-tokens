@@ -1,33 +1,33 @@
 const { callFigmaAPI, getFileStyles, FILE_KEY } = require('./api');
 
-// Extrakce barevných hodnot
+// Extract color values
 async function extractColors() {
-  console.log('Získávání barev z Figma...');
+  console.log('Getting colors from Figma...');
   
   const colorTokens = {};
   
   try {
-    // Zkusíme získat styly
+    // Try to get styles
     const stylesResponse = await callFigmaAPI(`files/${FILE_KEY}/styles`);
     
-    // Zkontrolujme strukturu odpovědi
-    console.log('Struktura odpovědi styles:');
+    // Check response structure
+    console.log('Styles response structure:');
     console.log(JSON.stringify(Object.keys(stylesResponse), null, 2));
     
-    // Získáme styly
+    // Get styles
     const styles = stylesResponse.meta?.styles || [];
-    console.log(`Nalezeno ${styles.length} stylů`);
+    console.log(`Found ${styles.length} styles`);
     
-    // Filtrujeme jen barevné styly (FILL)
+    // Filter only color styles (FILL)
     const colorStyles = styles.filter(style => style.style_type === 'FILL');
-    console.log(`Z toho ${colorStyles.length} barevných stylů`);
+    console.log(`Of which ${colorStyles.length} are color styles`);
     
-    // Pro každý barevný styl získáme detaily
+    // Get details for each color style
     for (const style of colorStyles) {
       const styleName = style.name.replace(/\//g, '-').replace(/\s+/g, '-').toLowerCase();
       
       try {
-        // Pokud máme node_id, pokusíme se získat barvu
+        // If we have node_id, try to get the color
         if (style.node_id) {
           const nodeData = await callFigmaAPI(`files/${FILE_KEY}/nodes?ids=${style.node_id}`);
           
@@ -42,44 +42,44 @@ async function extractColors() {
                 colorTokens[styleName] = {
                   value: `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a || 1})`
                 };
-                console.log(`Extrahována barva: ${styleName}`);
+                console.log(`Extracted color: ${styleName}`);
               }
             }
           }
         }
       } catch (nodeError) {
-        console.log(`Nepodařilo se získat detail barvy pro styl ${styleName}: ${nodeError.message}`);
+        console.log(`Failed to get color details for style ${styleName}: ${nodeError.message}`);
       }
     }
     
     return colorTokens;
   } catch (error) {
-    console.error('Chyba při získávání barev:', error);
+    console.error('Error getting colors:', error);
     return {};
   }
 }
 
-// Získání typografie
+// Get typography
 async function extractTypography() {
-  console.log('Získávání typografie z Figma...');
+  console.log('Getting typography from Figma...');
   
   const typographyTokens = {};
   
   try {
-    // Získáme styly
+    // Get styles
     const stylesResponse = await callFigmaAPI(`files/${FILE_KEY}/styles`);
     const styles = stylesResponse.meta?.styles || [];
     
-    // Filtrujeme jen typografické styly
+    // Filter only typography styles
     const textStyles = styles.filter(style => style.style_type === 'TEXT');
-    console.log(`Nalezeno ${textStyles.length} typografických stylů`);
+    console.log(`Found ${textStyles.length} typography styles`);
     
-    // Pro každý typografický styl získáme detaily
+    // For each typography style get details
     for (const style of textStyles) {
       const styleName = style.name.replace(/\//g, '-').replace(/\s+/g, '-').toLowerCase();
       
       try {
-        // Pokud máme node_id, pokusíme se získat typografii
+        // If we have node_id, try to get typography
         if (style.node_id) {
           const nodeData = await callFigmaAPI(`files/${FILE_KEY}/nodes?ids=${style.node_id}`);
           
@@ -97,43 +97,43 @@ async function extractTypography() {
                 letterSpacing: { value: letterSpacing ? `${letterSpacing}px` : 'normal' }
               };
               
-              console.log(`Extrahována typografie: ${styleName}`);
+              console.log(`Extracted typography: ${styleName}`);
             }
           }
         }
       } catch (nodeError) {
-        console.log(`Nepodařilo se získat detail typografie pro styl ${styleName}: ${nodeError.message}`);
+        console.log(`Failed to get typography details for style ${styleName}: ${nodeError.message}`);
       }
     }
     
     return typographyTokens;
   } catch (error) {
-    console.error('Chyba při získávání typografie:', error);
+    console.error('Error getting typography:', error);
     return {};
   }
 }
 
-// Získání stínů
+// Get shadows
 async function extractShadows() {
-  console.log('Získávání stínů z Figma...');
+  console.log('Getting shadows from Figma...');
   
   const shadowTokens = {};
   
   try {
-    // Získáme styly
+    // Get styles
     const stylesResponse = await callFigmaAPI(`files/${FILE_KEY}/styles`);
     const styles = stylesResponse.meta?.styles || [];
     
-    // Filtrujeme jen styly efektů (stínů)
+    // Filter only effect styles (shadows)
     const effectStyles = styles.filter(style => style.style_type === 'EFFECT');
-    console.log(`Nalezeno ${effectStyles.length} stylů efektů`);
+    console.log(`Found ${effectStyles.length} effect styles`);
     
-    // Pro každý styl efektu získáme detaily
+    // For each effect style get details
     for (const style of effectStyles) {
       const styleName = style.name.replace(/\//g, '-').replace(/\s+/g, '-').toLowerCase();
       
       try {
-        // Pokud máme node_id, pokusíme se získat efekt
+        // If we have node_id, try to get effect
         if (style.node_id) {
           const nodeData = await callFigmaAPI(`files/${FILE_KEY}/nodes?ids=${style.node_id}`);
           
@@ -156,28 +156,28 @@ async function extractShadows() {
                 shadowTokens[styleName] = {
                   value: shadows.join(', ')
                 };
-                console.log(`Extrahován stín: ${styleName}`);
+                console.log(`Extracted shadow: ${styleName}`);
               }
             }
           }
         }
       } catch (nodeError) {
-        console.log(`Nepodařilo se získat detail stínu pro styl ${styleName}: ${nodeError.message}`);
+        console.log(`Failed to get shadow details for style ${styleName}: ${nodeError.message}`);
       }
     }
     
     return shadowTokens;
   } catch (error) {
-    console.error('Chyba při získávání stínů:', error);
+    console.error('Error getting shadows:', error);
     return {};
   }
 }
 
-// Hlavní funkce pro extrakci design tokenů
+// Main function for design tokens extraction
 async function extractDesignTokens() {
-  console.log('Začínám extrakci design tokenů...');
+  console.log('Starting design tokens extraction...');
   
-  // Kategorizace tokenů
+  // Token categorization
   const tokens = {
     typography: {},
     colors: {},
@@ -185,28 +185,28 @@ async function extractDesignTokens() {
     borderRadius: {}
   };
   
-  // Získání barev
+  // Get colors
   try {
     tokens.colors = await extractColors();
-    console.log(`Úspěšně extrahováno ${Object.keys(tokens.colors).length} barev`);
+    console.log(`Successfully extracted ${Object.keys(tokens.colors).length} colors`);
   } catch (error) {
-    console.error('Chyba při extrakci barev:', error);
+    console.error('Error extracting colors:', error);
   }
   
-  // Získání typografie
+  // Get typography
   try {
     tokens.typography = await extractTypography();
-    console.log(`Úspěšně extrahováno ${Object.keys(tokens.typography).length} typografických stylů`);
+    console.log(`Successfully extracted ${Object.keys(tokens.typography).length} typography styles`);
   } catch (error) {
-    console.error('Chyba při extrakci typografie:', error);
+    console.error('Error extracting typography:', error);
   }
   
-  // Získání stínů
+  // Get shadows
   try {
     tokens.shadows = await extractShadows();
-    console.log(`Úspěšně extrahováno ${Object.keys(tokens.shadows).length} stínů`);
+    console.log(`Successfully extracted ${Object.keys(tokens.shadows).length} shadows`);
   } catch (error) {
-    console.error('Chyba při extrakci stínů:', error);
+    console.error('Error extracting shadows:', error);
   }
   
   return tokens;
