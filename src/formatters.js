@@ -4,7 +4,7 @@ const path = require('path');
 function formatToCSSVariables(tokens) {
   let css = `:root {\n`;
   
-  // Barvy
+  // Colors
   if (tokens.tokens.colors) {
     Object.entries(tokens.tokens.colors).forEach(([key, token]) => {
       if (key !== 'type') {
@@ -13,7 +13,7 @@ function formatToCSSVariables(tokens) {
     });
   }
   
-  // Typografie
+  // Typography
   if (tokens.tokens.typography) {
     Object.entries(tokens.tokens.typography).forEach(([key, token]) => {
       if (key !== 'type') {
@@ -26,7 +26,7 @@ function formatToCSSVariables(tokens) {
     });
   }
   
-  // Stíny
+  // Shadows
   if (tokens.tokens.shadows) {
     Object.entries(tokens.tokens.shadows).forEach(([key, token]) => {
       if (key !== 'type') {
@@ -35,7 +35,7 @@ function formatToCSSVariables(tokens) {
     });
   }
   
-  // Zaoblení
+  // Border Radius
   if (tokens.tokens.borderRadius) {
     Object.entries(tokens.tokens.borderRadius).forEach(([key, token]) => {
       if (key !== 'type') {
@@ -49,11 +49,11 @@ function formatToCSSVariables(tokens) {
 }
 
 function formatToSassVariables(tokens) {
-  let scss = `// Design Tokens vygenerované z Figmy\n\n`;
+  let scss = `// Design Tokens generated from Figma\n\n`;
   
-  // Barvy
+  // Colors
   if (tokens.tokens.colors) {
-    scss += `// Barvy\n`;
+    scss += `// Colors\n`;
     Object.entries(tokens.tokens.colors).forEach(([key, token]) => {
       if (key !== 'type') {
         scss += `$color-${key}: ${token.value};\n`;
@@ -62,9 +62,9 @@ function formatToSassVariables(tokens) {
     scss += `\n`;
   }
   
-  // Typografie
+  // Typography
   if (tokens.tokens.typography) {
-    scss += `// Typografie\n`;
+    scss += `// Typography\n`;
     Object.entries(tokens.tokens.typography).forEach(([key, token]) => {
       if (key !== 'type') {
         if (token.fontFamily) scss += `$font-family-${key}: ${token.fontFamily.value};\n`;
@@ -77,9 +77,9 @@ function formatToSassVariables(tokens) {
     scss += `\n`;
   }
   
-  // Stíny
+  // Shadows
   if (tokens.tokens.shadows) {
-    scss += `// Stíny\n`;
+    scss += `// Shadows\n`;
     Object.entries(tokens.tokens.shadows).forEach(([key, token]) => {
       if (key !== 'type') {
         scss += `$shadow-${key}: ${token.value};\n`;
@@ -88,9 +88,9 @@ function formatToSassVariables(tokens) {
     scss += `\n`;
   }
   
-  // Zaoblení
+  // Border Radius
   if (tokens.tokens.borderRadius) {
-    scss += `// Zaoblení\n`;
+    scss += `// Border Radius\n`;
     Object.entries(tokens.tokens.borderRadius).forEach(([key, token]) => {
       if (key !== 'type') {
         scss += `$border-radius-${key}: ${token.value};\n`;
@@ -102,20 +102,20 @@ function formatToSassVariables(tokens) {
 }
 
 function saveFormattedOutput(tokens, outputDir) {
-  // Vytvoření adresáře, pokud neexistuje
+  // Create directory if it doesn't exist
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   
-  // Uložení CSS proměnných
+  // Save CSS variables
   const cssOutput = formatToCSSVariables(tokens);
   fs.writeFileSync(path.join(outputDir, 'design-tokens.css'), cssOutput);
-  console.log(`CSS proměnné byly uloženy do souboru ${path.join(outputDir, 'design-tokens.css')}`);
+  console.log(`CSS variables have been saved to ${path.join(outputDir, 'design-tokens.css')}`);
   
-  // Uložení Sass proměnných
+  // Save Sass variables
   const sassOutput = formatToSassVariables(tokens);
   fs.writeFileSync(path.join(outputDir, 'design-tokens.scss'), sassOutput);
-  console.log(`Sass proměnné byly uloženy do souboru ${path.join(outputDir, 'design-tokens.scss')}`);
+  console.log(`Sass variables have been saved to ${path.join(outputDir, 'design-tokens.scss')}`);
 }
 
 module.exports = {
