@@ -4,12 +4,12 @@ require('dotenv').config();
 const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
 const FILE_KEY = process.env.FILE_KEY;
 
-console.log("Použití FIGMA_TOKEN:", FIGMA_TOKEN ? "Token nastaven" : "Token chybí");
-console.log("Použití FILE_KEY:", FILE_KEY);
+console.log("Using FIGMA_TOKEN:", FIGMA_TOKEN ? "Token set" : "Token missing");
+console.log("Using FILE_KEY:", FILE_KEY);
 
 async function callFigmaAPI(endpoint) {
   const url = `https://api.figma.com/v1/${endpoint}`;
-  console.log(`Volání API: ${url}`);
+  console.log(`API Call: ${url}`);
   
   const response = await fetch(url, {
     headers: {
@@ -26,22 +26,22 @@ async function callFigmaAPI(endpoint) {
   return response.json();
 }
 
-// Získání všech stylů ve Figma souboru
+// Get all styles in Figma file
 async function getFileStyles() {
   try {
-    // Zkusíme nový formát designu
+    // Try new design format
     const fileData = await callFigmaAPI(`designs/${FILE_KEY}`);
-    console.log("Úspěšně získána data přes designs/ endpoint");
+    console.log("Successfully retrieved data via designs/ endpoint");
     return fileData.styles || {};
   } catch (designError) {
-    console.log("Nepovedlo se použít designs/ endpoint, zkouším files/ endpoint...");
+    console.log("Failed to use designs/ endpoint, trying files/ endpoint...");
     try {
-      // Zkusíme starý formát souboru
+      // Try old file format
       const fileData = await callFigmaAPI(`files/${FILE_KEY}`);
-      console.log("Úspěšně získána data přes files/ endpoint");
+      console.log("Successfully retrieved data via files/ endpoint");
       return fileData.styles || {};
     } catch (fileError) {
-      console.error("Nepodařilo se získat styly ani přes jeden z endpointů");
+      console.error("Failed to get styles through either endpoint");
       throw fileError;
     }
   }
