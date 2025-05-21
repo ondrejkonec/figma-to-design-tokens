@@ -1,0 +1,24 @@
+{
+  "name": "figma-design-tokens",
+  "version": "1.0.0",
+  "description": "Design tokens extractor from Figma to W3C format, CSS and Sass",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "extract": "node src/index.js",
+    "watch": "node src/index.js --watch"
+  },
+  "keywords": [
+    "figma",
+    "design",
+    "tokens",
+    "css",
+    "sass"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "node-fetch": "^2.6.7"
+  }
+}
