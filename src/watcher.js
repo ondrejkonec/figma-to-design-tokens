@@ -9,68 +9,68 @@ let lastVersionId = null;
 
 async function checkForUpdates() {
   try {
-    console.log('Kontrola aktualizací Figma souboru...');
+    console.log('Checking for Figma file updates...');
     
-    // Zkusíme získat informace o verzi
+    // Try to get version information
     let fileInfo;
     let currentVersionId;
     
     try {
       fileInfo = await callFigmaAPI(`designs/${FILE_KEY}`);
       currentVersionId = fileInfo.version;
-      console.log(`Úspěšně získána verze přes designs/ endpoint: ${currentVersionId}`);
+      console.log(`Successfully retrieved version via designs/ endpoint: ${currentVersionId}`);
     } catch (designError) {
-      console.log("Nepodařilo se získat informace přes designs endpoint, zkouším files endpoint...");
+      console.log("Failed to get information via designs endpoint, trying files endpoint...");
       try {
         fileInfo = await callFigmaAPI(`files/${FILE_KEY}`);
         currentVersionId = fileInfo.version;
-        console.log(`Úspěšně získána verze přes files/ endpoint: ${currentVersionId}`);
+        console.log(`Successfully retrieved version via files/ endpoint: ${currentVersionId}`);
       } catch (fileError) {
-        // Pokud nemůžeme získat verzi, použijeme timestamp
+        // If we can't get the version, use timestamp
         currentVersionId = new Date().toISOString();
-        console.log(`Nepodařilo se získat verzi, používám timestamp: ${currentVersionId}`);
+        console.log(`Failed to get version, using timestamp: ${currentVersionId}`);
       }
     }
     
     if (lastVersionId && lastVersionId !== currentVersionId) {
-      console.log('Detekována změna v knihovně Figma!');
-      console.log(`Předchozí verze: ${lastVersionId}, nová verze: ${currentVersionId}`);
+      console.log('Change detected in Figma library!');
+      console.log(`Previous version: ${lastVersionId}, new version: ${currentVersionId}`);
       
-      // Získání aktualizovaných tokenů a jejich uložení
+      // Get updated tokens and save them
       const tokens = await extractDesignTokens();
       const w3cTokens = convertToW3CFormat(tokens);
       saveTokensToFiles(w3cTokens);
     } else if (!lastVersionId) {
-      // První spuštění
-      console.log('První spuštění, generuji tokeny...');
+      // First run
+      console.log('First run, generating tokens...');
       const tokens = await extractDesignTokens();
       const w3cTokens = convertToW3CFormat(tokens);
       saveTokensToFiles(w3cTokens);
     } else {
-      console.log('Žádné změny nebyly detekovány.');
-      console.log(`Aktuální verze: ${currentVersionId}`);
+      console.log('No changes detected.');
+      console.log(`Current version: ${currentVersionId}`);
     }
     
     lastVersionId = currentVersionId;
   } catch (error) {
-    console.error('Chyba při kontrole aktualizací:', error);
+    console.error('Error checking for updates:', error);
   }
 }
 
 function saveTokensToFiles(tokens) {
   const outputDir = path.join(__dirname, '..', 'output');
   
-  // Vytvoření adresáře, pokud neexistuje
+  // Create directory if it doesn't exist
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   
-  // Uložení JSON formátu
+  // Save JSON format
   const outputPath = path.join(outputDir, 'design-tokens.json');
   fs.writeFileSync(outputPath, JSON.stringify(tokens, null, 2));
-  console.log(`Design tokeny byly uloženy do souboru ${outputPath}`);
+  console.log(`Design tokens have been saved to ${outputPath}`);
   
-  // Uložení CSS a Sass formátů
+  // Save CSS and Sass formats
   saveFormattedOutput(tokens, outputDir);
 }
 
