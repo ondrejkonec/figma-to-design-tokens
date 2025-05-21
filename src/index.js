@@ -1,30 +1,30 @@
 // src/index.js
 const { checkForUpdates } = require('./watcher');
 
-// Nastavení intervalu aktualizace v milisekundách (výchozí 1 hodina)
+// Update interval settings in milliseconds (default 1 hour)
 const updateInterval = process.env.UPDATE_INTERVAL ? 
                        parseInt(process.env.UPDATE_INTERVAL) * 1000 : 
                        60 * 60 * 1000;
 
-// Při spuštění zkontrolovat a vygenerovat tokeny
+// Check and generate tokens on startup
 async function main() {
-  console.log('Spouštím proces extrakce design tokenů z Figma...');
+  console.log('Starting design tokens extraction process from Figma...');
   
   try {
-    // První kontrola a generování
+    // First check and generation
     await checkForUpdates();
     
-    // Rozhodnutí, zda spustit sledování nebo jednorázovou extrakci
+    // Decide whether to start watching or one-time extraction
     const watchMode = process.argv.includes('--watch') || process.argv.includes('-w');
     
     if (watchMode) {
-      console.log(`Nastaveno periodické sledování změn - interval ${updateInterval/1000/60} minut`);
+      console.log(`Periodic change monitoring set - interval ${updateInterval/1000/60} minutes`);
       setInterval(checkForUpdates, updateInterval);
     } else {
-      console.log('Jednorázová extrakce dokončena. Pro kontinuální sledování spusťte s parametrem --watch');
+      console.log('One-time extraction completed. For continuous monitoring, run with --watch parameter');
     }
   } catch (error) {
-    console.error('Došlo k chybě:', error);
+    console.error('An error occurred:', error);
     process.exit(1);
   }
 }
